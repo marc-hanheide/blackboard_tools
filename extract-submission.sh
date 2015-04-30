@@ -67,4 +67,4 @@ for f in "$ex1dir"/*.txt; do
 done
 
 
-#rm -rf "$tempdir"
+rm -rf "$tempdir"
