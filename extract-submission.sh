@@ -6,7 +6,7 @@ fi
 
 
 function get_field() {
-	grep "^$1:" "$f" | sed 's/^'"$1"': \(.*\)$'"/\1/" |tr -d "\r"
+	grep "^$1:" "$f" | head -n1 | sed 's/^'"$1"': \(.*\)$'"/\1/" |tr -d "\r" 
 }
 
 zipfile="$1"
@@ -38,7 +38,7 @@ for f in "$ex1dir"/*.txt; do
 	#echo "$sid"
 	
 	clean_name=`echo "$name" | tr " " "_" | sed 's/_([0-9]*)$//'`
-	ex2dir="$prefix/$sid-$clean_name"
+	ex2dir="$prefix/${clean_name}_${sid}"
 	mkdir -p "$ex2dir"
 
 	rm -f "$ex2dir"/*
@@ -67,4 +67,4 @@ for f in "$ex1dir"/*.txt; do
 done
 
 
-rm -rf "$tempdir"
+#rm -rf "$tempdir"

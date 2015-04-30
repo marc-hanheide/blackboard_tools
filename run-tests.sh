@@ -14,6 +14,7 @@ fi
 
 for d in "$sourcedir"/????????-*; do
 	if [ -d "$d" ]; then
+		echo -e -n `basename "$d\t"`
 		(cd $d && $testscript > test.log 2>&1) && echo TRUE || echo FALSE
 	fi
 done
