@@ -12,7 +12,7 @@ else
 	sourcedir="."
 fi
 
-for d in "$sourcedir"/????????-*; do
+for d in "$sourcedir"/*_*; do
 	if [ -d "$d" ]; then
 		echo -e -n `basename "$d\t"`
 		(cd $d && $testscript > test.log 2>&1) && echo TRUE || echo FALSE
