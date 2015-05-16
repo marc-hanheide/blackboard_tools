@@ -32,10 +32,10 @@ for f in "$ex1dir"/*.txt; do
 	name=`get_field Name`
 	date=`get_field "Date Submitted"`
 	#name=`grep '^Name:' "$f" | sed 's/^Name:\(.*\)$/\1/'`
-	files=`grep "^\tFilename:" "$f" | sed 's/^.*Filename: \(.*\)$/\1/'|tr -d "\r"`
+	files=`grep -P "^\tFilename:" "$f" | sed 's/^.*Filename: \(.*\)$/\1/'|tr -d "\r"`
 	echo "   extracting $name"
 	sid=`echo $name | sed 's/.*(\([0-9]*\)).*/\1/'`
-	#echo "$sid"
+	echo "$files"
 	
 	clean_name=`echo "$name" | tr " " "_" | sed 's/_([0-9]*)$//'`
 	ex2dir="$prefix/${clean_name}_${sid}"
