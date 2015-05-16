@@ -5,6 +5,9 @@ from optparse import OptionParser
 import fnmatch
 from subprocess import check_output
 from shutil import copyfile
+from subprocess import CalledProcessError
+
+
 
 def call_planner(domain_in, problem_in):
 
@@ -20,8 +23,6 @@ def call_planner(domain_in, problem_in):
     copyfile(domain_in, domain_file)
     copyfile(problem_in, problem_file)
     plan_file = path.join(tmpdir, 'plan.out')
-
-    print "operate in %s" % tmpdir
 
     try:
         log = main(["--plan-file", plan_file, "--cwd", tmpdir, problem_file, "--search", "astar(ff)"])
