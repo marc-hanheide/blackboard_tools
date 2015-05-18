@@ -9,7 +9,6 @@ from subprocess import CalledProcessError
 
 import csv
 
-
 def call_planner(domain_in, problem_in):
 
     from driver.main import main
@@ -46,14 +45,25 @@ def file_mime(f):
 
 if __name__ == "__main__":
     parser = OptionParser()
-    parser.add_option("--glob", dest="glob_pattern", default="*_*_????????/actual-T2.pddl")
+    parser.add_option("--csv_in", dest="csv_in", default="csv.in")
+    parser.add_option("--submission_file", dest="submission_file", default="actual-T2.pddl")
+    parser.add_option("--dir", dest="root_dir", default="")
     parser.add_option("--problems", default=['move.pddl', 'move_rev.pddl', 'depot-01.pddl', 'depot-02.pddl'])
     parser.add_option("--planner", default="fast-downward.py")
     parser.add_option("--csv_output", default="output.csv")
     #parser.add_option("--to", dest="to_name")
     (options, args) = parser.parse_args(sys.argv[1:])
 
-    files = glob.glob(options.glob_pattern)
+    submission = []
+    with open(options.csv_in, "r") as csv_file:
+        reader = csv.reader(csv_file)
+        header = True
+        for row in reader:
+            if header:
+                header = False
+                continue
+            submission.append(row)
+
     with open(options.csv_output, "w") as csv_file:
         csv_writer = csv.writer(csv_file, dialect='excel')
         csv_row=['surname', 'firstname','id','Filetype']
@@ -62,26 +72,30 @@ if __name__ == "__main__":
             csv_row.append(p+" plan length/log")
         csv_writer.writerow(csv_row)
 
-        files.sort()
+        for s in submission:
+            sur = s[0]
+            first = s[1]
+            sid = s[2]
 
-        for f in files:
-            f_name = os.path.abspath(f)
-            dir_name = os.path.dirname(f_name)
+            dir_name = os.path.abspath(os.path.join(options.root_dir, "%s_%s_%s" % (first, sur, sid)))
+            f_name = os.path.join(dir_name, options.submission_file)
             file_name = os.path.basename(f_name)
-            user_dir = os.path.basename(dir_name)
-            (first, sur, sid) = user_dir.split('_')
 
+            if not os.path.exists(f_name): 
+                csv_row=[sur, first, sid, "NO FILE %s FOUND" % options.submission_file]
+                csv_writer.writerow(csv_row)
+                continue
             csv_row=[sur, first, sid, file_mime(f_name)]
             for p in options.problems:
                 (success, log, plan) = call_planner(f_name, p)
                 if success:
-                    print "%s:%s PLAN FOUND" % (f, p)
+                    print "%s:%s PLAN FOUND" % (dir_name, p)
                     csv_row.append(True)
                     csv_row.append(plan.count('\n'))
                     with open(os.path.join(dir_name, p + ".plan"), "w") as text_file:
                         text_file.write(plan)
                 else:
-                    print "%s:%s NO PLAN FOUND" % (f, p)
+                    print "%s:%s NO PLAN FOUND" % (dir_name, p)
                     csv_row.append(False)
                     csv_row.append(log)
                     with open(os.path.join(dir_name, p + ".noplan"), "w") as text_file:
