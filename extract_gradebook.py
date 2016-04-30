@@ -9,6 +9,7 @@ from shutil import rmtree
 
 from tempfile import mkdtemp
 
+
 def parse_txt(txt):
     lines = txt.splitlines()
     pattern = '(Name|Assignment|Filename): '
@@ -40,18 +41,20 @@ def extract_submission(zf, record, prefix="submissions/"):
                     for ifn in int_zip.namelist():
                         if not match('.*/$', ifn):  # if not dir
                             int_zip.extract(ifn, tmp_dir)
-                            proper_file = ifn.decode('ascii','ignore')
+                            proper_file = ifn.decode('ascii', 'ignore')
                             rename(join(tmp_dir, ifn),
                                    join(user_dir, basename(proper_file)))
                 rmtree(tmp_dir)
         except Exception as e:
             print "Couldn't process file %s => %s" % (f, e)
             pprint(record)
-            #break
+
     if not contained_zip:
-        print "record for %s did not contain a zip file, instead these files where included:" % record['sid']
+        print "  record for %s did not contain a zip " \
+              "file, instead these files were included:" \
+              % record['sid']
         for sf in record['files']:
-            print '  > %s' % sf
+            print '   > %s' % sf
 
 
 def parse_gradebook_file(zf):
@@ -80,5 +83,3 @@ with ZipFile('gradebook.zip') as zf:
 
     for k, v in gradebook.items():
         extract_submission(zf, v)
-
-    #pprint(gradebook)
