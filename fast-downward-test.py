@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import glob
 import sys
 import os
@@ -50,6 +51,7 @@ if __name__ == "__main__":
     parser.add_option("--dir", dest="root_dir", default="")
     parser.add_option("--problems", default=['move.pddl', 'move_rev.pddl', 'depot-01.pddl', 'depot-02.pddl'])
     parser.add_option("--planner", default="fast-downward.py")
+    parser.add_option("--student_id", default=None)
     parser.add_option("--csv_output", default="output.csv")
     #parser.add_option("--to", dest="to_name")
     (options, args) = parser.parse_args(sys.argv[1:])
@@ -62,7 +64,8 @@ if __name__ == "__main__":
             if header:
                 header = False
                 continue
-            submission.append(row)
+            if options.student_id is None or options.student_id == row[2]:
+            	submission.append(row)
 
     with open(options.csv_output, "w") as csv_file:
         csv_writer = csv.writer(csv_file, dialect='excel')
