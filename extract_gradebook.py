@@ -40,10 +40,11 @@ def extract_submission(zf, record, prefix="submissions/"):
                 with ZipFile(join(user_dir, f)) as int_zip:
                     for ifn in int_zip.namelist():
                         if not match('.*/$', ifn):  # if not dir
-                            int_zip.extract(ifn, tmp_dir)
-                            proper_file = ifn.decode('ascii', 'ignore')
-                            rename(join(tmp_dir, ifn),
-                                   join(user_dir, basename(proper_file)))
+                            int_zip.extract(ifn, user_dir)
+                            #int_zip.extract(ifn, tmp_dir)
+                            #proper_file = ifn.decode('ascii', 'ignore')
+                            #rename(join(tmp_dir, ifn),
+                                   #join(user_dir, basename(proper_file)))
                 rmtree(tmp_dir)
         except Exception as e:
             print "Couldn't process file %s => %s" % (f, e)
