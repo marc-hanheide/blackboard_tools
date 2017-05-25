@@ -13,6 +13,7 @@ def plan(domain_file, problem_file):
     with open(domain_file, 'r') as domain,\
             open(problem_file, 'r') as problem:
         d = domain.read()
+        d = d.decode('ascii', 'ignore').encode('ascii')
         p = problem.read()
         # payload = 'domain=' + d + '&problem=' + p
         payload = {'domain': d, 'problem': p}
@@ -25,7 +26,7 @@ def plan(domain_file, problem_file):
     actions = []
     if len(plan) > 1:
         for action in plan:
-            m = match('[(]([a-z,_]*) .*[)]', action)
+            m = match('[(]([a-z,_,-]*) .*[)]', action)
             if m:
                 actions.append(m.group(1))
 
