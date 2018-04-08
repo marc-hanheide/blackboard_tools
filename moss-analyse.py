@@ -12,7 +12,7 @@ def parse(s):
     r = re.search('^.*/(.*)\.py \(([0-9]*)%\)$', s)
     return (r.group(1), r.group(2))
 
-cutoff = 10.0
+cutoff = 20.0
 
 for r in  root.findall(".//tr[td]"):
     f1 = parse(list(r[0])[0].text)
