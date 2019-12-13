@@ -3,7 +3,7 @@ from re import match, split, IGNORECASE
 from datetime import datetime
 from collections import defaultdict
 from pprint import pprint
-from os.path import exists, join, basename
+from os.path import exists, join, basename, dirname, realpath
 from os import makedirs, rename
 from shutil import rmtree
 
@@ -24,6 +24,11 @@ def parse_txt(txt):
     return entry
 
 
+def extract_flat(zip, filename, my_dir):
+    zipInfo = zip.getinfo(filename)
+    zipInfo.filename = basename(filename)
+    zip.extract(zipInfo, my_dir)
+
 def extract_submission(zf, record, prefix="submissions/"):
     user_dir = join(prefix, record['sid'])
     if not exists(user_dir):
@@ -31,7 +36,8 @@ def extract_submission(zf, record, prefix="submissions/"):
     contained_zip = False
     for f in record['files']:
         try:
-            zf.extract(f, user_dir)
+            extract_flat(zf, join(record['dir'], f), user_dir)
+            #zf.extract(join(record['dir'], f), user_dir)
             if match('.*\.zip$', f, flags=IGNORECASE):
                 contained_zip = True
                 tmp_dir = mkdtemp()
@@ -62,25 +68,27 @@ def parse_gradebook_file(zf):
     records = {}
 
     for f in zf.namelist():
-        m = match('([^_]*)_([0-9]*)_attempt_(.*).txt$', f)
+        m = match('^(gradebook_[^/]*)/(.*)_([0-9]*)_attempt_(.*).txt$', f)
         if m:
             with zf.open(f) as txt_file:
                 record_txt = txt_file.read()
-                entry = parse_txt(unicode(record_txt, 'UTF-8'))
+                entry = parse_txt(record_txt.decode('latin1'))
                 record = {
-                    'assignment': m.group(1),
-                    'sid': m.group(2),
-                    'date': datetime.strptime(m.group(3),
+                    'assignment': m.group(2),
+                    'sid': m.group(3),
+                    'dir': m.group(1),
+                    'date': datetime.strptime(m.group(4),
                                               '%Y-%m-%d-%H-%M-%S'),
                 }
                 record.update(entry)
+                print record
             records[record['sid']] = record
     return records
 
 
 with ZipFile('gradebook.zip') as zf:
-
     gradebook = parse_gradebook_file(zf)
 
     for k, v in gradebook.items():
+        pprint(v)
         extract_submission(zf, v)
