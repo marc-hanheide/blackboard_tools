@@ -47,15 +47,15 @@ def extract_submission(zf, record, prefix="submissions/"):
                                    #join(user_dir, basename(proper_file)))
                 rmtree(tmp_dir)
         except Exception as e:
-            print "Couldn't process file %s => %s" % (f, e)
+            print("Couldn't process file %s => %s" % (f, e))
             pprint(record)
 
     if not contained_zip:
-        print "  record for %s did not contain a zip " \
-              "file, instead these files were included:" \
-              % record['sid']
+        print("  record for %s did not contain a zip " 
+              "file, instead these files were included:" 
+              % record['sid'])
         for sf in record['files']:
-            print '   > %s' % sf
+            print('   > %s' % sf)
 
 
 def parse_gradebook_file(zf):
@@ -65,8 +65,8 @@ def parse_gradebook_file(zf):
         m = match('([^_]*)_([0-9]*)_attempt_(.*).txt$', f)
         if m:
             with zf.open(f) as txt_file:
-                record_txt = txt_file.read()
-                entry = parse_txt(unicode(record_txt, 'UTF-8'))
+                record_txt = txt_file.read().decode('utf-8')
+                entry = parse_txt(record_txt)
                 record = {
                     'assignment': m.group(1),
                     'sid': m.group(2),
