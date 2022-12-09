@@ -68,16 +68,16 @@ def parse_gradebook_file(zf):
     records = {}
 
     for f in zf.namelist():
-        m = match('^(gradebook_[^/]*)/(.*)_([0-9]*)_attempt_(.*).txt$', f)
+        m = match('^(.*)_([0-9]*)_attempt_(.*).txt$', f)
         if m:
             with zf.open(f) as txt_file:
                 record_txt = txt_file.read().decode('utf-8')
                 entry = parse_txt(record_txt)
                 record = {
-                    'assignment': m.group(2),
-                    'sid': m.group(3),
-                    'dir': m.group(1),
-                    'date': datetime.strptime(m.group(4),
+                    'assignment': m.group(1),
+                    'sid': m.group(2),
+                    'dir': '',
+                    'date': datetime.strptime(m.group(3),
                                               '%Y-%m-%d-%H-%M-%S'),
                 }
                 record.update(entry)
@@ -87,7 +87,7 @@ def parse_gradebook_file(zf):
 
 with ZipFile('gradebook.zip') as zf:
     gradebook = parse_gradebook_file(zf)
-
+    print(gradebook)
     for k, v in gradebook.items():
         pprint(v)
         extract_submission(zf, v)
