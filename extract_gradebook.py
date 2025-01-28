@@ -34,6 +34,9 @@ def extract_submission(zf, record, prefix="submissions/"):
     if not exists(user_dir):
         makedirs(user_dir)
     contained_zip = False
+    if 'files' not in record:
+        print("  record for %s did not contain a files field" % record)
+        return
     for f in record['files']:
         try:
             extract_flat(zf, join(record['dir'], f), user_dir)
